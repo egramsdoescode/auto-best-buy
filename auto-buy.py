@@ -15,16 +15,16 @@ driver = webdriver.Firefox()
 
 # Go to airpods url
 driver.get(os.getenv("PRODUCT_URL"))
+wait = WebDriverWait(driver, 10)
 
 # Add airpods to cart
-add_button = driver.find_element(By.CSS_SELECTOR, "button[data-test-id='add-to-cart']")
+add_button = driver.find_element(By.CSS_SELECTOR, "button[data-test-id='add-to-cart']") 
 add_button.click()
 
 # Wait for next page to load after clicking
 driver.implicitly_wait(60)
 
 # Go to cart
-wait = WebDriverWait(driver, 10)
 go_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//a[@href='/cart']"))) 
 go_button.click()
 
@@ -44,16 +44,20 @@ guest_button.click()
 # Wait until address apply button is visible before entering form fields
 apply_button = wait.until(EC.element_to_be_clickable((By.CSS_SELECTOR, "button[data-track='Shipping: Save shipping address']")))
 
-fields = {
+shipping_fields = {
     "firstName": os.getenv("FIRST_NAME"),
     "lastName":  os.getenv("LAST_NAME"),
     "street":    os.getenv("STREET"),
+    "street2":   os.getenv("STREET2"),
     "city":      os.getenv("CITY"),
     "zipcode":   os.getenv("ZIPCODE")
 }
 
+show_apt = driver.find_element(By.CSS_SELECTOR, "button[class='c-button-link address-form__showAddress2Link']")
+show_apt.click()
+
 # Input form fields
-for field_id, value in fields.items():
+for field_id, value in shipping_fields.items():
     input_element = driver.find_element(By.CSS_SELECTOR, f"input#{field_id}")
     input_element.send_keys(value)
 
@@ -62,5 +66,19 @@ state_dropdown_el = driver.find_element(By.CSS_SELECTOR, "select#state")
 state_dropdown = Select(state_dropdown_el)
 state_dropdown.select_by_visible_text(os.getenv("STATE"))
 
-time.sleep(3)
-driver.quit()
+address_checkbox = driver.find_element(By.CSS_SELECTOR, "input[id='save-for-billing-address-Map {}']")
+address_checkbox.click()    
+ 
+apply_button.click()
+
+contact_fields = {
+    "user.emailAddress":      os.getenv("EMAIL"),
+    "user.phone":             os.getenv("PHONE")
+}
+
+for field_id, value in contact_fields.items():
+    input_element = driver.find_element(By.CSS_SELECTOR, f"input#{field_id}")
+    input_element.send_keys(value)
+
+continue_to_payment = driver.find_element(By.CSS_SELECTOR, "button[class='btn btn-lg btn-block btn-secondary']")
+continue_to_payment.click()
