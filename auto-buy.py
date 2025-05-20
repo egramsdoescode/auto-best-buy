@@ -1,4 +1,3 @@
-import selenium
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -6,7 +5,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import Select
 from dotenv import load_dotenv
 import os
-import time
 
 # Load form fields from .env
 load_dotenv()
@@ -79,8 +77,6 @@ WebDriverWait(driver, 15).until(
     EC.invisibility_of_element_located((By.CSS_SELECTOR, "i[class='spinner spinner-large']"))
 )
 
-print("I am after spinning wait part 1")
-
 contact_fields = {
     "user.emailAddress":      os.getenv("EMAIL"),
     "user.phone":             os.getenv("PHONE")
@@ -94,6 +90,5 @@ WebDriverWait(driver, 15).until(
     EC.invisibility_of_element_located((By.CSS_SELECTOR, "i[class='spinner spinner-large']"))
 )
 
-print("I am after spinning wait part 2")
 continue_to_payment = driver.find_element(By.CSS_SELECTOR, "button[class='btn btn-lg btn-block btn-secondary']")
 continue_to_payment.click()
