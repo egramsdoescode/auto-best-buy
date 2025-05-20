@@ -1,3 +1,4 @@
+import selenium
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -66,10 +67,19 @@ state_dropdown_el = driver.find_element(By.CSS_SELECTOR, "select#state")
 state_dropdown = Select(state_dropdown_el)
 state_dropdown.select_by_visible_text(os.getenv("STATE"))
 
-address_checkbox = driver.find_element(By.CSS_SELECTOR, "input[id='save-for-billing-address-Map {}']")
-address_checkbox.click()    
+address_checkbox = driver.find_element(By.CSS_SELECTOR, "span[class='c-checkbox-brand']")
+
+# Scroll into view
+driver.execute_script("arguments[0].scrollIntoView(true);", address_checkbox)
+address_checkbox.click()
  
 apply_button.click()
+
+WebDriverWait(driver, 15).until(
+    EC.invisibility_of_element_located((By.CSS_SELECTOR, "i[class='spinner spinner-large']"))
+)
+
+print("I am after spinning wait part 1")
 
 contact_fields = {
     "user.emailAddress":      os.getenv("EMAIL"),
@@ -77,8 +87,13 @@ contact_fields = {
 }
 
 for field_id, value in contact_fields.items():
-    input_element = driver.find_element(By.CSS_SELECTOR, f"input#{field_id}")
+    input_element = driver.find_element(By.CSS_SELECTOR, f"input[id='{field_id}']")
     input_element.send_keys(value)
 
+WebDriverWait(driver, 15).until(
+    EC.invisibility_of_element_located((By.CSS_SELECTOR, "i[class='spinner spinner-large']"))
+)
+
+print("I am after spinning wait part 2")
 continue_to_payment = driver.find_element(By.CSS_SELECTOR, "button[class='btn btn-lg btn-block btn-secondary']")
 continue_to_payment.click()
